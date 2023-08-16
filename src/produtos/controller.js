@@ -1,11 +1,12 @@
 const express = require('express')
 const router = express.Router()
-
+const queries = require('./queries')
+const dbClient = require('../../db')
 
 //create
 router.post('/', (req,res) => {
     const body = req.body
-    req.app.get('client').query('INSERT INTO produtos (nome, quantidade) VALUES ($1, $2) RETURNING *', [body.nome, body.quantidade], (error, results) => {
+    dbClient.query(queries.createProduto, [body.nome, body.quantidade], (error, results) => {
         if (error) {
             throw error
         }
@@ -16,7 +17,7 @@ router.post('/', (req,res) => {
 //list
 router.get('/', (req,res) => {
     const body = req.body
-    req.app.get('client').query('SELECT * FROM PRODUTOS', (error, results) => {
+    dbClient.query(queries.listProduto, (error, results) => {
         if (error) {
             throw error
         }
@@ -27,7 +28,7 @@ router.get('/', (req,res) => {
 //find
 router.get('/:id', (req,res) => {
     const id = req.params.id
-    req.app.get('client').query('SELECT * FROM PRODUTOS WHERE id=$1', [id], (error, results) => {
+    dbClient.query(queries.findProdutoById, [id], (error, results) => {
         if (error) {
             throw error
         }
@@ -38,7 +39,7 @@ router.get('/:id', (req,res) => {
 //delete
 router.delete('/:id', (req,res) => {
     const id = req.params.id
-    req.app.get('client').query('DELETE FROM PRODUTOS WHERE id=$1', [id], (error, results) => {
+    dbClient.query(queries.deleteProduto, [id], (error, results) => {
         if (error) {
             throw error
         }
@@ -50,7 +51,7 @@ router.delete('/:id', (req,res) => {
 router.patch('/:id', (req,res) => {
     const id = req.params.id
     const body = req.body
-    req.app.get('client').query('UPDATE produtos SET nome = $1, quantidade = $2 WHERE id = $3', [body.nome, body.quantidade, id], (error, results) => {
+    dbClient.query(queries.updateProduto, [body.nome, body.quantidade, id], (error, results) => {
         if (error) {
             throw error
         }
